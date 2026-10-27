@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>NPC_Health_Controller</AssemblyName>
+    <RootNamespace>NPC_Health_Controller</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+
+    <!-- Your BONELAB folder. Change this one line if the game moves. -->
+    <BonelabDir Condition="'$(BonelabDir)' == ''">/home/prodiacy/.local/share/Steam/steamapps/common/BONELAB</BonelabDir>
+    <MelonDir>$(BonelabDir)/MelonLoader/net6</MelonDir>
+    <GameDlls>$(BonelabDir)/MelonLoader/Il2CppAssemblies</GameDlls>
+  </PropertyGroup>
+
+  <!-- Don't copy game DLLs into bin/ -->
+  <ItemDefinitionGroup>
+    <Reference><Private>false</Private></Reference>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony"><HintPath>$(MelonDir)/0Harmony.dll</HintPath></Reference>
+    <Reference Include="MelonLoader"><HintPath>$(MelonDir)/MelonLoader.dll</HintPath></Reference>
+    <Reference Include="Il2CppInterop.Common"><HintPath>$(MelonDir)/Il2CppInterop.Common.dll</HintPath></Reference>
+    <Reference Include="Il2CppInterop.Runtime"><HintPath>$(MelonDir)/Il2CppInterop.Runtime.dll</HintPath></Reference>
+    <Reference Include="BoneLib"><HintPath>$(BonelabDir)/Mods/BoneLib.dll</HintPath></Reference>
+    <Reference Include="Assembly-CSharp"><HintPath>$(GameDlls)/Assembly-CSharp.dll</HintPath></Reference>
+    <Reference Include="Il2Cppmscorlib"><HintPath>$(GameDlls)/Il2Cppmscorlib.dll</HintPath></Reference>
+    <Reference Include="Il2CppSystem"><HintPath>$(GameDlls)/Il2CppSystem.dll</HintPath></Reference>
+    <Reference Include="Il2CppSLZ.Algorithms"><HintPath>$(GameDlls)/Il2CppSLZ.Algorithms.dll</HintPath></Reference>
+    <Reference Include="Il2CppSLZ.Marrow"><HintPath>$(GameDlls)/Il2CppSLZ.Marrow.dll</HintPath></Reference>
+    <Reference Include="Il2CppSLZ.Serialize"><HintPath>$(GameDlls)/Il2CppSLZ.Serialize.dll</HintPath></Reference>
+    <Reference Include="UniTask"><HintPath>$(GameDlls)/Il2CppUniTask.dll</HintPath></Reference>
+    <Reference Include="Unity.ResourceManager"><HintPath>$(GameDlls)/Unity.ResourceManager.dll</HintPath></Reference>
+    <Reference Include="Unity.TextMeshPro"><HintPath>$(GameDlls)/Unity.TextMeshPro.dll</HintPath></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(GameDlls)/UnityEngine.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.AssetBundleModule"><HintPath>$(GameDlls)/UnityEngine.AssetBundleModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.AudioModule"><HintPath>$(GameDlls)/UnityEngine.AudioModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameDlls)/UnityEngine.CoreModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(GameDlls)/UnityEngine.ImageConversionModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(GameDlls)/UnityEngine.IMGUIModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(GameDlls)/UnityEngine.InputLegacyModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(GameDlls)/UnityEngine.PhysicsModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.TextRenderingModule"><HintPath>$(GameDlls)/UnityEngine.TextRenderingModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.UI"><HintPath>$(GameDlls)/UnityEngine.UI.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.UIElementsModule"><HintPath>$(GameDlls)/UnityEngine.UIElementsModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.UIModule"><HintPath>$(GameDlls)/UnityEngine.UIModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule"><HintPath>$(GameDlls)/UnityEngine.UnityWebRequestModule.dll</HintPath></Reference>
+    <!-- Need another game/Unity assembly? Add a line like:
+    <Reference Include="UnityEngine.AnimationModule"><HintPath>$(GameDlls)/UnityEngine.AnimationModule.dll</HintPath></Reference>
+    -->
+  </ItemGroup>
+
+  <!-- Friendly errors instead of 200 "type not found" errors -->
+  <Target Name="CheckBonelabFolder" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(MelonDir)/MelonLoader.dll')" Text="MelonLoader not found at $(MelonDir). Check BonelabDir in NPC_Health_Controller.csproj and make sure MelonLoader 0.6.6+ is installed." />
+    <Error Condition="!Exists('$(GameDlls)')" Text="Il2CppAssemblies not found. Launch BONELAB once with MelonLoader installed so it generates them." />
+    <Error Condition="!Exists('$(BonelabDir)/Mods/BoneLib.dll')" Text="BoneLib.dll not found in $(BonelabDir)/Mods. Install BoneLib from Thunderstore (gnonme/BoneLib)." />
+  </Target>
+
+  <!-- After every build, copy the DLL into BONELAB/Mods (close the game first) -->
+  <Target Name="CopyToMods" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BonelabDir)/Mods" />
+    <Message Importance="high" Text="Copied $(TargetFileName) to $(BonelabDir)/Mods" />
+  </Target>
+
+</Project>
