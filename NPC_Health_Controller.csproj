@@ -9,13 +9,13 @@
     <Nullable>disable</Nullable>
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
 
-    <!-- Your BONELAB folder. Change this one line if the game moves. -->
-    <BonelabDir Condition="'$(BonelabDir)' == ''">/home/prodiacy/.local/share/Steam/steamapps/common/BONELAB</BonelabDir>
+    
+    <BonelabDir Condition="'$(BonelabDir)' == ''">$(HOME)/.local/share/Steam/steamapps/common/BONELAB</BonelabDir>
     <MelonDir>$(BonelabDir)/MelonLoader/net6</MelonDir>
     <GameDlls>$(BonelabDir)/MelonLoader/Il2CppAssemblies</GameDlls>
   </PropertyGroup>
 
-  <!-- Don't copy game DLLs into bin/ -->
+  
   <ItemDefinitionGroup>
     <Reference><Private>false</Private></Reference>
   </ItemDefinitionGroup>
@@ -53,14 +53,14 @@
     -->
   </ItemGroup>
 
-  <!-- Friendly errors instead of 200 "type not found" errors -->
+  
   <Target Name="CheckBonelabFolder" BeforeTargets="ResolveAssemblyReferences">
     <Error Condition="!Exists('$(MelonDir)/MelonLoader.dll')" Text="MelonLoader not found at $(MelonDir). Check BonelabDir in NPC_Health_Controller.csproj and make sure MelonLoader 0.6.6+ is installed." />
     <Error Condition="!Exists('$(GameDlls)')" Text="Il2CppAssemblies not found. Launch BONELAB once with MelonLoader installed so it generates them." />
     <Error Condition="!Exists('$(BonelabDir)/Mods/BoneLib.dll')" Text="BoneLib.dll not found in $(BonelabDir)/Mods. Install BoneLib from Thunderstore (gnonme/BoneLib)." />
   </Target>
 
-  <!-- After every build, copy the DLL into BONELAB/Mods (close the game first) -->
+  
   <Target Name="CopyToMods" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BonelabDir)/Mods" />
     <Message Importance="high" Text="Copied $(TargetFileName) to $(BonelabDir)/Mods" />
